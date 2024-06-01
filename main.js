@@ -84,7 +84,7 @@ app.post("/scrape", async (req, res) => {
       (divs) => divs.map((div) => div.getAttribute("data-img-src"))
     );
 
-    const imagesDir = "/root/compPicScrape/public/images";
+    const imagesDir = "./public/images";
     if (!fs.existsSync(imagesDir)) {
       console.log("ISSUE?")
       fs.mkdirSync(imagesDir);
