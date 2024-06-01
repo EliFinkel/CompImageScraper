@@ -75,6 +75,7 @@ app.post("/scrape", async (req, res) => {
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--disable-http2"],
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
