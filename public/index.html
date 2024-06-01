@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Puppeteer Frontend</title>
+  <title>Comp Image Scraper</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,6 +19,16 @@
     h1 {
       color: #0056b3;
       text-align: center;
+      margin-top: 20px;
+    }
+
+    .form-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 33%;
+      width: 100%;
+      margin-top: 40px;
     }
 
     form {
@@ -29,7 +39,6 @@
       max-width: 400px;
       width: 100%;
       box-sizing: border-box;
-      margin-top: 10%;
     }
 
     label {
@@ -55,6 +64,7 @@
       border-radius: 4px;
       cursor: pointer;
       width: 100%;
+      font-size: 16px;
     }
 
     button:hover {
@@ -95,6 +105,8 @@
       height: 2in;
       overflow: hidden;
       cursor: pointer;
+      border: 2px solid #ccc;
+      border-radius: 4px;
     }
 
     .image-item img {
@@ -102,37 +114,19 @@
       height: 100%;
       object-fit: cover;
     }
-
-    .copy-button {
-      display: none;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .image-item:hover .copy-button {
-      display: block;
-    }
   </style>
 </head>
 <body>
-  <div>
-    <h1>Puppeteer Frontend</h1>
+  <h1>Comp Image Scraper</h1>
+  <div class="form-container">
     <form id="scrapeForm">
       <label for="url">Enter URL to scrape:</label>
       <input type="text" id="url" name="url" required>
       <button type="submit">Scrape</button>
     </form>
-    <div id="response"></div>
-    <div id="imageGrid"></div>
   </div>
+  <div id="response"></div>
+  <div id="imageGrid"></div>
 
   <script>
     document.getElementById('scrapeForm').addEventListener('submit', async function (e) {
@@ -161,7 +155,6 @@
             imgDiv.classList.add('image-item');
             imgDiv.innerHTML = `
               <img src="${imageUrl}" alt="Scraped Image">
-              <button class="copy-button" onclick="copyToClipboard('${imageUrl}')">Copy URL</button>
             `;
             imageGrid.appendChild(imgDiv);
           });
@@ -172,14 +165,6 @@
         responseElement.textContent = `Error: ${error.message}`;
       }
     });
-
-    function copyToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Image URL copied to clipboard');
-      }).catch(err => {
-        alert('Failed to copy text: ', err);
-      });
-    }
   </script>
 </body>
 </html>
