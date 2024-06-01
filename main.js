@@ -131,10 +131,10 @@ app.post("/scrape", async (req, res) => {
   }
 });
 
-// app.listen(port, () => {
-//   console.log(`Server is running on http://localhost:${port}`);
-// });
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});
 
-http.createServer(function (req,res) {
-  res.write("Up");
-}).listen(80);
+// http.createServer(function (req,res) {
+//   res.write("Up");
+// }).listen(80);
