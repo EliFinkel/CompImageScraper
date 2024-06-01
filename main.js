@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const archiver = require("archiver");
-var http = require("http");
 
 const app = express();
 const port = 80;
@@ -17,15 +16,9 @@ app.use(express.static("public"));
 app.use("/download", express.static(path.join(__dirname, "public")));
 
 function extractPathSegment(url) {
-  // Find the starting index of the path segment you want to extract
   const startIndex = url.indexOf(".com/") + 5;
-
-  // Find the ending index of the path segment you want to extract
   const endIndex = url.indexOf("/", startIndex);
-
-  // Extract the substring using the start and end indices
   const result = url.substring(startIndex, endIndex);
-
   return result;
 }
 
@@ -45,9 +38,7 @@ async function download(url, filePath) {
       response.data.pipe(fs.createWriteStream(filePath));
       console.log(`Image downloaded successfully to ${filePath}`);
     } else {
-      console.error(
-        `Failed to download image. Status code: ${response.status}`
-      );
+      console.error(`Failed to download image. Status code: ${response.status}`);
     }
   } catch (error) {
     console.error(`Error downloading file: ${error.message}`);
@@ -74,7 +65,6 @@ app.post("/scrape", async (req, res) => {
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--disable-http2"],
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
@@ -83,6 +73,7 @@ app.post("/scrape", async (req, res) => {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36"
     );
 
+    console.log(`Navigating to ${url}`);
     await page.goto(url);
     await page.click(".aspectRatioImage");
     await page.waitForSelector(".photoItems", { timeout: 60000 });
@@ -100,6 +91,7 @@ app.post("/scrape", async (req, res) => {
     for (let i = 0; i < imageSources.length; i++) {
       const imgUrl = imageSources[i];
       const filePath = path.join(imagesDir, `image${i}.jpg`);
+      console.log(`Downloading image from ${imgUrl} to ${filePath}`);
       await download(imgUrl, filePath);
     }
 
@@ -112,10 +104,6 @@ app.post("/scrape", async (req, res) => {
 
     output.on("close", () => {
       res.json({ success: true, downloadUrl: `/download/${extractPathSegment(url)}.zip` });
-      // res.json({ success: true, downloadUrl: `/download/images.zip` });
-
-
-      // Delete the images and directory after zip is created
       deleteFolderRecursive(imagesDir);
       console.log("Images and directory deleted successfully.");
     });
@@ -128,6 +116,7 @@ app.post("/scrape", async (req, res) => {
     archive.directory(imagesDir, false);
     await archive.finalize();
   } catch (error) {
+    console.error(`Error during scraping: ${error.message}`);
     res.json({ success: false, message: error.message });
   }
 });
@@ -135,7 +124,3 @@ app.post("/scrape", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
-
-// http.createServer(function (req,res) {
-//   res.write("Up");
-// }).listen(80);
