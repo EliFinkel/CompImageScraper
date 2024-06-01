@@ -11,8 +11,8 @@
       margin: 0;
       padding: 20px;
       display: flex;
-      justify-content: center;
-      align-items: flex-start; /* Align items to the top */
+      flex-direction: column;
+      align-items: center;
       height: 100vh;
     }
 
@@ -29,7 +29,7 @@
       max-width: 400px;
       width: 100%;
       box-sizing: border-box;
-      margin-top: 10%; /* Position it lower on the page */
+      margin-top: 10%;
     }
 
     label {
@@ -39,7 +39,7 @@
     }
 
     input[type="text"] {
-      width: calc(100% - 22px); /* Adjust to fit within padding and borders */
+      width: calc(100% - 22px);
       padding: 10px;
       margin-bottom: 20px;
       border: 1px solid #ccc;
@@ -67,15 +67,6 @@
       text-align: center;
     }
 
-    #response a {
-      color: #0056b3;
-      text-decoration: none;
-    }
-
-    #response a:hover {
-      text-decoration: underline;
-    }
-
     .spinner {
       margin: 0 auto;
       border: 4px solid rgba(0, 0, 0, 0.1);
@@ -90,6 +81,45 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    #imageGrid {
+      display: grid;
+      grid-template-columns: repeat(4, 2in);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .image-item {
+      position: relative;
+      width: 2in;
+      height: 2in;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .copy-button {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .image-item:hover .copy-button {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -100,7 +130,8 @@
       <input type="text" id="url" name="url" required>
       <button type="submit">Scrape</button>
     </form>
-    <p id="response"></p>
+    <div id="response"></div>
+    <div id="imageGrid"></div>
   </div>
 
   <script>
@@ -108,8 +139,10 @@
       e.preventDefault();
       const url = document.getElementById('url').value;
       const responseElement = document.getElementById('response');
+      const imageGrid = document.getElementById('imageGrid');
 
       responseElement.innerHTML = '<div class="spinner"></div> Processing...';
+      imageGrid.innerHTML = '';
 
       try {
         const response = await fetch('/scrape', {
@@ -121,7 +154,17 @@
         });
         const data = await response.json();
         if (data.success) {
-          responseElement.innerHTML = 'Scraping complete. <a href="' + data.downloadUrl + '" download>Download Images</a>';
+          responseElement.textContent = 'Scraping complete.';
+
+          data.images.forEach(imageUrl => {
+            const imgDiv = document.createElement('div');
+            imgDiv.classList.add('image-item');
+            imgDiv.innerHTML = `
+              <img src="${imageUrl}" alt="Scraped Image">
+              <button class="copy-button" onclick="copyToClipboard('${imageUrl}')">Copy URL</button>
+            `;
+            imageGrid.appendChild(imgDiv);
+          });
         } else {
           responseElement.textContent = `Error: ${data.message}`;
         }
@@ -129,6 +172,14 @@
         responseElement.textContent = `Error: ${error.message}`;
       }
     });
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Image URL copied to clipboard');
+      }).catch(err => {
+        alert('Failed to copy text: ', err);
+      });
+    }
   </script>
 </body>
 </html>
