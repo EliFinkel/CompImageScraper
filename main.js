@@ -24,7 +24,6 @@ function extractPathSegment(url) {
 
 async function download(url, filePath) {
   try {
-    console.log(`Starting download: ${url}`);
     const response = await axios({
       url,
       method: "GET",
@@ -35,26 +34,14 @@ async function download(url, filePath) {
       },
     });
 
-    console.log(`HTTP Status Code: ${response.status}`);
-
     if (response.status === 200) {
-      const writer = fs.createWriteStream(filePath);
-      response.data.pipe(writer);
-      
-      writer.on('finish', () => {
-        console.log(`Image downloaded successfully to ${filePath}`);
-      });
-
-      writer.on('error', (err) => {
-        console.error(`Error writing to file: ${err.message}`);
-      });
-      
+      response.data.pipe(fs.createWriteStream(filePath));
+      console.log(`Image downloaded successfully to ${filePath}`);
     } else {
       console.error(`Failed to download image. Status code: ${response.status}`);
     }
   } catch (error) {
     console.error(`Error downloading file: ${error.message}`);
-    console.error(`Error details: ${error.response ? error.response.data : 'No response data'}`);
   }
 }
 
@@ -97,7 +84,7 @@ app.post("/scrape", async (req, res) => {
       (divs) => divs.map((div) => div.getAttribute("data-img-src"))
     );
 
-    const imagesDir = "./public/images";
+    const imagesDir = "./root/compPicScrape/public/images";
     if (!fs.existsSync(imagesDir)) {
       console.log("ISSUE?")
       fs.mkdirSync(imagesDir);
