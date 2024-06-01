@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 const archiver = require("archiver");
+var http = require("http");
 
 const app = express();
 const port = 3000;
@@ -130,6 +131,10 @@ app.post("/scrape", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on http://localhost:${port}`);
+// });
+
+http.createServer(function (req,res) {
+  res.write("Up");
+}).listen(80);
