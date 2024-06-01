@@ -75,6 +75,7 @@ app.post("/scrape", async (req, res) => {
 
     console.log(`Navigating to ${url}`);
     await page.goto(url);
+    console.log("success")
     await page.click(".aspectRatioImage");
     await page.waitForSelector(".photoItems", { timeout: 60000 });
 
@@ -85,6 +86,7 @@ app.post("/scrape", async (req, res) => {
 
     const imagesDir = "./public/images";
     if (!fs.existsSync(imagesDir)) {
+      console.log("ISSUE?")
       fs.mkdirSync(imagesDir);
     }
 
