@@ -1,14 +1,17 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const puppeteer = require("puppeteer");
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const express = require('express');
+const bodyParser = require('body-parser');
+const puppeteer = require('puppeteer');
 
-const app = express();
-const port = 80;
+// Express server setup
+const serverApp = express();
+const port = 3000;
 
-app.use(bodyParser.json());
-app.use(express.static("public"));
+serverApp.use(bodyParser.json());
+serverApp.use(express.static(path.join(__dirname, 'public')));
 
-app.post("/scrape", async (req, res) => {
+serverApp.post("/scrape", async (req, res) => {
   const { url } = req.body;
 
   try {
@@ -42,6 +45,32 @@ app.post("/scrape", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+serverApp.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
+});
+
+// Electron setup
+function createWindow() {
+  const mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  mainWindow.loadURL(`http://localhost:${port}`);
+}
+
+app.whenReady().then(() => {
+  createWindow();
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
 });
