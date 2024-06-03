@@ -98,7 +98,7 @@
 
       #imageGrid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 10px;
         width: 100%;
         margin-top: 20px;
@@ -106,7 +106,7 @@
 
       .image-item {
         width: 100%;
-        padding-bottom: 66.67%; /* 3:2 aspect ratio */
+        padding-bottom: 80%; /* Increase padding to make images larger while maintaining aspect ratio */
         position: relative;
         overflow: hidden;
         cursor: pointer;
@@ -117,8 +117,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        width: 120%; /* Increase width to 120% */
+        height: 120%; /* Increase height to 120% */
         object-fit: contain; /* Preserve aspect ratio */
       }
     </style>
@@ -128,12 +128,7 @@
     <div class="form-container">
       <form id="scrapeForm">
         <label for="url">Enter Apartments.com URL to scrape:</label>
-        <input
-          type="text"
-          id="url"
-          name="url"
-          required
-        />
+        <input type="text" id="url" name="url" required />
         <button type="submit">Scrape</button>
       </form>
     </div>
