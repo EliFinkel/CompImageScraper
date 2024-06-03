@@ -104,7 +104,6 @@
       }
 
       .image-item {
-        position: relative;
         width: 2in;
         height: 2in;
         overflow: hidden;
@@ -125,11 +124,20 @@
     <div class="form-container">
       <form id="scrapeForm">
         <label for="url">Enter Apartments.com URL to scrape:</label>
-        <input type="text" id="url" name="url" required />
+        <input
+          type="text"
+          id="url"
+          name="url"
+          value="https://www.apartments.com/the-eli-winter-springs-winter-springs-fl/c4vvq4e/"
+          required
+        />
         <button type="submit">Scrape</button>
       </form>
     </div>
     <div id="response"></div>
+    <button id="openImagesButton" style="display: none; margin-top: 20px">
+      Open Images in Browser
+    </button>
     <div id="imageGrid"></div>
 
     <script>
@@ -140,10 +148,12 @@
           const url = document.getElementById("url").value;
           const responseElement = document.getElementById("response");
           const imageGrid = document.getElementById("imageGrid");
+          const openImagesButton = document.getElementById("openImagesButton");
 
           responseElement.innerHTML =
             '<div class="spinner"></div> Processing...';
           imageGrid.innerHTML = "";
+          openImagesButton.style.display = "none";
 
           try {
             const response = await fetch("/scrape", {
@@ -156,13 +166,24 @@
             const data = await response.json();
             if (data.success) {
               responseElement.textContent = "Scraping complete.";
+              openImagesButton.style.display = "block";
+
+              openImagesButton.onclick = () => {
+                const images = imageGrid.querySelectorAll("img");
+                images.forEach((imgElement) => {
+                  window.open(imgElement.src, "_blank");
+                });
+              };
 
               data.images.forEach((imageUrl) => {
+                const updatedUrl = imageUrl.replace("/113/", "/116/");
                 const imgDiv = document.createElement("div");
                 imgDiv.classList.add("image-item");
-                imgDiv.innerHTML = `
-              <img src="${imageUrl}" alt="Scraped Image">
-            `;
+
+                const imgElement = document.createElement("img");
+                imgElement.src = updatedUrl;
+
+                imgDiv.appendChild(imgElement);
                 imageGrid.appendChild(imgDiv);
               });
             } else {
