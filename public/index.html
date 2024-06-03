@@ -13,7 +13,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
       }
 
       h1 {
@@ -98,24 +98,28 @@
 
       #imageGrid {
         display: grid;
-        grid-template-columns: repeat(4, 2in);
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 10px;
+        width: 100%;
         margin-top: 20px;
       }
 
       .image-item {
-        width: 2in;
-        height: 2in;
+        width: 100%;
+        padding-bottom: 66.67%; /* 3:2 aspect ratio */
+        position: relative;
         overflow: hidden;
         cursor: pointer;
-        border: 2px solid #ccc;
         border-radius: 4px;
       }
 
       .image-item img {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain; /* Preserve aspect ratio */
       }
     </style>
   </head>
