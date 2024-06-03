@@ -187,28 +187,32 @@
               responseElement.textContent = "Scraping complete.";
               openImagesButton.style.display = "block";
               openImagesButton.onclick = async () => {
+                const updatedUrls = data.images.map((imageUrl) =>
+                  imageUrl.replace("/113/", "/116/")
+                );
                 await fetch("/open-images", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({ images: data.images }),
+                  body: JSON.stringify({ images: updatedUrls }),
                 });
               };
 
               data.images.forEach((imageUrl) => {
+                const updatedUrl = imageUrl.replace("/113/", "/116/");
                 const imgDiv = document.createElement("div");
                 imgDiv.classList.add("image-item");
 
                 const imgElement = document.createElement("img");
-                imgElement.src = imageUrl;
+                imgElement.src = updatedUrl;
 
                 const copyButton = document.createElement("button");
                 copyButton.classList.add("copy-button");
                 copyButton.textContent = "Copy";
                 copyButton.onclick = async () => {
                   try {
-                    const response = await fetch(imageUrl);
+                    const response = await fetch(updatedUrl);
                     const blob = await response.blob();
 
                     // Convert image to PNG using a canvas
@@ -223,7 +227,7 @@
                       canvas.toBlob(async (blob) => {
                         const item = new ClipboardItem({ "image/png": blob });
                         await navigator.clipboard.write([item]);
-                        // alert("Image copied to clipboard!");
+                        alert("Image copied to clipboard!");
                       }, "image/png");
                     };
                   } catch (error) {
