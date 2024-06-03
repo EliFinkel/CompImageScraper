@@ -118,6 +118,24 @@
         height: 100%;
         object-fit: cover;
       }
+
+      .copy-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 86, 179, 0.8);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+        cursor: pointer;
+      }
+
+      .image-item:hover .copy-button {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -181,7 +199,40 @@
               data.images.forEach((imageUrl) => {
                 const imgDiv = document.createElement("div");
                 imgDiv.classList.add("image-item");
-                imgDiv.innerHTML = `<img src="${imageUrl}" alt="Scraped Image">`;
+
+                const imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+
+                const copyButton = document.createElement("button");
+                copyButton.classList.add("copy-button");
+                copyButton.textContent = "Copy";
+                copyButton.onclick = async () => {
+                  try {
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+
+                    // Convert image to PNG using a canvas
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    const img = new Image();
+                    img.src = URL.createObjectURL(blob);
+                    img.onload = async () => {
+                      canvas.width = img.width;
+                      canvas.height = img.height;
+                      ctx.drawImage(img, 0, 0);
+                      canvas.toBlob(async (blob) => {
+                        const item = new ClipboardItem({ "image/png": blob });
+                        await navigator.clipboard.write([item]);
+                        // alert("Image copied to clipboard!");
+                      }, "image/png");
+                    };
+                  } catch (error) {
+                    alert("Failed to copy image: " + error.message);
+                  }
+                };
+
+                imgDiv.appendChild(imgElement);
+                imgDiv.appendChild(copyButton);
                 imageGrid.appendChild(imgDiv);
               });
             } else {
