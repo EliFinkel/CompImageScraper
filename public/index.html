@@ -125,11 +125,20 @@
     <div class="form-container">
       <form id="scrapeForm">
         <label for="url">Enter Apartments.com URL to scrape:</label>
-        <input type="text" id="url" name="url" required />
+        <input
+          type="text"
+          id="url"
+          name="url"
+          value="https://www.apartments.com/the-eli-winter-springs-winter-springs-fl/c4vvq4e/"
+          required
+        />
         <button type="submit">Scrape</button>
       </form>
     </div>
     <div id="response"></div>
+    <button id="openImagesButton" style="display: none; margin-top: 20px">
+      Open Images in Browser
+    </button>
     <div id="imageGrid"></div>
 
     <script>
@@ -140,10 +149,12 @@
           const url = document.getElementById("url").value;
           const responseElement = document.getElementById("response");
           const imageGrid = document.getElementById("imageGrid");
+          const openImagesButton = document.getElementById("openImagesButton");
 
           responseElement.innerHTML =
             '<div class="spinner"></div> Processing...';
           imageGrid.innerHTML = "";
+          openImagesButton.style.display = "none";
 
           try {
             const response = await fetch("/scrape", {
@@ -156,13 +167,21 @@
             const data = await response.json();
             if (data.success) {
               responseElement.textContent = "Scraping complete.";
+              openImagesButton.style.display = "block";
+              openImagesButton.onclick = async () => {
+                await fetch("/open-images", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ images: data.images }),
+                });
+              };
 
               data.images.forEach((imageUrl) => {
                 const imgDiv = document.createElement("div");
                 imgDiv.classList.add("image-item");
-                imgDiv.innerHTML = `
-                  <img src="${imageUrl}" alt="Scraped Image">
-                `;
+                imgDiv.innerHTML = `<img src="${imageUrl}" alt="Scraped Image">`;
                 imageGrid.appendChild(imgDiv);
               });
             } else {

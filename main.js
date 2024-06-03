@@ -1,15 +1,15 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const puppeteer = require('puppeteer');
+const { app, BrowserWindow } = require("electron");
+const path = require("path");
+const express = require("express");
+const bodyParser = require("body-parser");
+const puppeteer = require("puppeteer");
 
 // Express server setup
 const serverApp = express();
 const port = 3000;
 
 serverApp.use(bodyParser.json());
-serverApp.use(express.static(path.join(__dirname, 'public')));
+serverApp.use(express.static(path.join(__dirname, "public")));
 
 serverApp.post("/scrape", async (req, res) => {
   const { url } = req.body;
@@ -17,7 +17,7 @@ serverApp.post("/scrape", async (req, res) => {
   try {
     const browser = await puppeteer.launch({
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
@@ -45,6 +45,19 @@ serverApp.post("/scrape", async (req, res) => {
   }
 });
 
+serverApp.post("/open-images", async (req, res) => {
+  const { images } = req.body;
+  try {
+    const open = (await import("open")).default;
+    for (const imageUrl of images) {
+      await open(imageUrl);
+    }
+    res.json({ success: true });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+});
+
 serverApp.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
@@ -66,11 +79,11 @@ function createWindow() {
 app.whenReady().then(() => {
   createWindow();
 
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
 });
