@@ -5,8 +5,11 @@ const puppeteer = require("puppeteer");
 const app = express();
 const port = 80;
 
+require("dotenv").config();
 app.use(bodyParser.json());
 app.use(express.static("public"));
+
+
 
 app.post("/scrape", async (req, res) => {
   const { url } = req.body;
