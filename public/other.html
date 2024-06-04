@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Other Page</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      nav {
+        background-color: #0056b3;
+        color: white;
+        width: 100%;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+
+      nav .company-name {
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      nav ul {
+        list-style-type: none;
+        display: flex;
+        gap: 20px;
+      }
+
+      nav ul li {
+        display: inline;
+      }
+
+      nav ul li a {
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      nav ul li a:hover {
+        text-decoration: underline;
+      }
+
+      h1 {
+        color: #0056b3;
+        text-align: center;
+        margin-top: 70px; /* Adjusted for fixed navbar */
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="company-name">Providence</div>
+      <ul>
+        <li><a href="index.html">Comp Scrape</a></li>
+        <li><a href="other.html">Other</a></li>
+      </ul>
+    </nav>
+  </body>
+</html>
