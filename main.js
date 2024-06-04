@@ -5,14 +5,19 @@ const puppeteer = require("puppeteer");
 const app = express();
 const port = 80;
 
-
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
-
+let isScraping = false;
 
 app.post("/scrape", async (req, res) => {
   const { url } = req.body;
+
+  if (isScraping) {
+    return res.json({ success: false, message: "Server is busy. Please try again later." });
+  }
+
+  isScraping = true;
 
   try {
     const browser = await puppeteer.launch({
@@ -42,6 +47,8 @@ app.post("/scrape", async (req, res) => {
   } catch (error) {
     console.error(`Error during scraping: ${error.message}`);
     res.json({ success: false, message: error.message });
+  } finally {
+    isScraping = false;
   }
 });
 
