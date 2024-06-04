@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Comp Image Scraper</title>
+  <title>Property Image Scraper</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
+      font-family: 'Roboto', sans-serif;
+      background-color: #e0f7fa;
       color: #333;
       margin: 0;
       padding: 20px;
@@ -14,12 +14,23 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     h1 {
-      color: #0056b3;
+      color: #00796b;
       text-align: center;
       margin-top: 20px;
+      font-size: 2.5em;
     }
 
     .form-container {
@@ -32,13 +43,23 @@
     }
 
     form {
-      background-color: #fff;
+      background-color: #ffffff;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
       max-width: 400px;
       width: 100%;
       box-sizing: border-box;
+      animation: zoomIn 0.5s ease-in-out;
+    }
+
+    @keyframes zoomIn {
+      from {
+        transform: scale(0.5);
+      }
+      to {
+        transform: scale(1);
+      }
     }
 
     label {
@@ -57,7 +78,7 @@
     }
 
     button {
-      background-color: #0056b3;
+      background-color: #00796b;
       color: white;
       padding: 10px 15px;
       border: none;
@@ -65,10 +86,11 @@
       cursor: pointer;
       width: 100%;
       font-size: 16px;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #004494;
+      background-color: #004d40;
     }
 
     #response {
@@ -80,7 +102,7 @@
     .spinner {
       margin: 0 auto;
       border: 4px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #0056b3;
+      border-left-color: #00796b;
       border-radius: 50%;
       width: 24px;
       height: 24px;
@@ -99,18 +121,26 @@
     #imageGrid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 10px;
+      gap: 20px;
       width: 100%;
       margin-top: 20px;
     }
 
     .image-item {
       width: 100%;
-      padding-bottom: 80%; /* Increase padding to make images larger while maintaining aspect ratio */
+      padding-bottom: 80%;
       position: relative;
       overflow: hidden;
       cursor: pointer;
-      border-radius: 4px;
+      /* border-radius: 10px; */
+      /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    }
+
+    .image-item:hover {
+      transform: scale(1.05);
+      /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); */
     }
 
     .image-item img {
@@ -119,21 +149,39 @@
       left: 0;
       width: 100%;
       height: 100%;
-      object-fit: contain; /* Preserve aspect ratio */
+      object-fit: contain;
+      transition: opacity 0.3s ease;
+    }
+
+    #openImagesButton {
+      background-color: #00796b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    #openImagesButton:hover {
+      background-color: #004d40;
     }
   </style>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Comp Image Scraper</h1>
+  <h1>Property Image Scraper</h1>
   <div class="form-container">
     <form id="scrapeForm">
-      <label for="url">Enter Apartments.com URL to scrape:</label>
+      <label for="url">Enter apartments.com URL:</label>
       <input type="text" id="url" name="url" required />
-      <button type="submit">Scrape</button>
+      <button type="submit">Get Images</button>
     </form>
   </div>
   <div id="response"></div>
-  <button id="openImagesButton" style="display: none; margin-top: 20px">
+  <button id="openImagesButton" style="display: none;">
     Open Images in Browser
   </button>
   <div id="imageGrid"></div>
@@ -163,7 +211,7 @@
           });
           const data = await response.json();
           if (data.success) {
-            responseElement.textContent = "Scraping complete.";
+            responseElement.innerHTML = "";
             openImagesButton.style.display = "block";
 
             openImagesButton.onclick = () => {
