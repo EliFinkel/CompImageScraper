@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const port = 3000;
+const port = 80;
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
