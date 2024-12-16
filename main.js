@@ -21,9 +21,8 @@ app.post("/scrape", async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      timeout: 60000  // Set a timeout for the browser launch
+      headless: false,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 800 });
@@ -32,22 +31,24 @@ app.post("/scrape", async (req, res) => {
     );
 
     console.log(`Navigating to ${url}`);
-    await page.goto(url, { timeout: 60000 }); // Set a timeout for page navigation
+    await page.goto(url);
     console.log("Page loaded successfully");
     await page.click(".aspectRatioImage");
-    await page.waitForSelector(".photoItems", { timeout: 60000 }); // Set a timeout for selector waiting
+     // Ensure the images section is available before extracting data
+     await page.waitForSelector(".media-thumbnail-section", { timeout: 60000 });
 
-    const imageSources = await page.$$eval(
-      ".photoItem .backgroundImageWrapper",
-      (divs) => divs.map((div) => div.getAttribute("data-img-src"))
-    );
+     // Extract all image sources from the `src` attribute
+     const imageSources = await page.$$eval(
+       ".media-thumbnail-section img",
+       (images) => images.map((img) => img.getAttribute("src"))
+     );
 
     await browser.close();
 
     res.json({ success: true, images: imageSources });
   } catch (error) {
     console.error(`Error during scraping: ${error.message}`);
-    res.status(500).json({ success: false, message: error.message }); // Return a 500 status on error
+    res.json({ success: false, message: error.message });
   } finally {
     isScraping = false;
   }
@@ -55,13 +56,4 @@ app.post("/scrape", async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-});
-
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received. Closing http server.');
-  server.close(() => {
-    console.log('Http server closed.');
-    process.exit(0);
-  });
 });
