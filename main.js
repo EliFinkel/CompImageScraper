@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const puppeteer = require("puppeteer");
 
 const app = express();
-const port = 80;
+const port = 3000;
 
 app.use(bodyParser.json());
 app.use(express.static("public"));
@@ -40,8 +40,14 @@ app.post("/scrape", async (req, res) => {
      // Extract all image sources from the `src` attribute
      const imageSources = await page.$$eval(
        ".media-thumbnail-section img",
-       (images) => images.map((img) => img.getAttribute("src"))
-     );
+       (images) => images.map((img) => {
+        let src = img.getAttribute("src").replace("/117/", "/112/")
+        console.log(src);
+
+        return src;
+       }
+
+     ));
 
     await browser.close();
 
