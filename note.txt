@@ -1,0 +1,8 @@
+first push the code
+then connect to ec2 instance
+pm2 kill
+pull
+npm i
+npm i -g pm2
+pm2 start main.js
+make sure you are using public ip with http://
