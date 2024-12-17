@@ -41,7 +41,7 @@ app.post("/scrape", async (req, res) => {
      const imageSources = await page.$$eval(
        ".media-thumbnail-section img",
        (images) => images.map((img) => {
-        let src = img.getAttribute("src").replace("/117/", "/112/")
+        let src = img.getAttribute("src").replace("/117/", "/116/")
         console.log(src);
 
         return src;
